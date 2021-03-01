@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <title>Gazetteer</title>
+    <link rel="shortcut icon" type="image/jpg" href="libs/css/images/favicon.ico" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A mobile-friendly app that will provide profiling for all countries through the presentation of demographic, climatic, geographical and other data." />
+    <meta name="author" content="Laura Dennis" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/21c7afe89b.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin="" />
+
+    <link rel="stylesheet" href="node_modules/leaflet.markercluster/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css">
+
+    <link rel="stylesheet" href="node_modules/leaflet-easybutton/src/easy-button.css">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="libs/css/main.css" />
+
+</head>
+<body onload="getInfo()">
+
+    <div class="container-fluid vh-100 m-0" id="loader" style="display: block">
+        <div class="row justify-content-center align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
+                <div id="load">
+                    <span style="--dot:1;"></span>
+                    <span style="--dot:2;"></span>
+                    <span style="--dot:3;"></span>
+                    <span style="--dot:4;"></span>
+                    <span style="--dot:5;"></span>
+                    <span style="--dot:6;"></span>
+                    <span style="--dot:7;"></span>
+                    <span style="--dot:8;"></span>
+                    <span style="--dot:9;"></span>
+                    <span style="--dot:10;"></span>
+                    <span style="--dot:11;"></span>
+                    <span style="--dot:12;"></span>
+                    <span style="--dot:13;"></span>
+                    <span style="--dot:14;"></span>
+                    <span style="--dot:15;"></span>
+                    <span style="--dot:16;"></span>
+                    <span style="--dot:17;"></span>
+                    <span style="--dot:18;"></span>
+                    <span style="--dot:19;"></span>
+                    <span style="--dot:20;"></span>
+                    <div id="rocket"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main" style="display:none;" class="container-fluid m-0">
+        <div class="row">
+            <div id="section1" class="col-sm-12 col-md-4 col-lg-4 m-0">
+                <div class="row">
+                    <nav class="navbar justify-content-center mw-vh-100">
+                        <div class="col-12 d-flex justify-content-center" id="home">
+                            <a class="navbar-brand" onclick="location.reload();">
+                                <i id="icon" class="navbar-brand fas fa-user-astronaut d-inline-block align-middle" alt=""></i>
+                                <span id="title" class="align-middle">Gazetteer</span>
+                                <p id="tagline">Your guide to the galaxy!</p>
+                            </a>
+                        </div>
+                        <div class="input-group col-12 d-flex justify-content-between">
+                            <select name="country" id="search"></select>
+                            <button onclick="getInfo()" id="submitBtn" type="submit">
+                                <i class="fas fa-meteor"></i>
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+                <div class="row">
+                    <div class="col-12" style="position: absolute; top: 30%; height: 65%;">
+                        <div class="row ml-1">
+                            <ul class="nav nav-tabs border-bottom border-dark justify-content-start">
+                                <li id="infoBtn" class="active"><a data-toggle="tab" href="#info" class="m-1" style="color: #A7AABD">Info</a></li>
+                                <li id="exchangeBtn"><a data-toggle="tab" href="#exchange" class="m-1" style="color: #A7AABD">Exchange</a></li>
+                                <li id="weatherBtn"><a data-toggle="tab" href="#weather" class="m-1" style="color: #1c253c">Weather</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content" class="col-12 tab-content d-inline-block p-0" style="width: 100%; height: 99%;" dir="rtl">
+                            <div id="info" class="tab-pane active">
+                                <div class="row align-items-center border border-dark" style="height: 40%;" dir="ltr">
+                                    <h3 class="col-6 d-flex justify-content-center align-items-center" id="country">Earth</h3>
+                                    <span class="col-6 d-flex justify-content-center align-items-center"><img id="flag" src="libs/css/globe-solid" alt="Country Flag" /></span>
+                                </div>
+                                <div class="border-bottom border-dark" dir="ltr">
+                                    <div class="row align-items-center">
+                                        <h4 class="col d-flex justify-content-end m-0" dir="ltr">Capital:</h4>
+                                        <span class="col d-flex justify-content-start align-middle" id="capital">N/A</span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Population:</h4>
+                                        <span class="col d-flex justify-content-start"><span id="population">7.674</span>&nbsp;<span id="populationUnit">billion</span></span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0" dir="ltr">Area:</h4>
+                                        <span class="col d-flex justify-content-start"><span id="area">510.1</span>&nbsp;<span id="areaUnits">million</span>&nbsp;<span>km<sup>2</sup></span></span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0" dir="ltr">Currency:</h4>
+                                        <span class="col d-flex justify-content-start"><span id="currency">Money</span>&nbsp;(<span id="symbol"><i class="fas fa-coins"></i></span>)</span>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center" dir="ltr">
+                                    <h3 class="col-12 d-flex justify-content-start"><u>Summary</u></h3>
+                                    <br>
+                                    <p class="col-12 d-flex justify-content-start" id="summary">
+                                        Earth is the third planet from the Sun and the only astronomical object known to harbor life.
+                                        About 29% of Earth's surface is land consisting of continents and islands. The emaining 71%
+                                        is covered with water, mostly by oceans but also by lakes, rivers and other fresh water, which
+                                        together constitute the hydrosphere. Much of Earth's polar regions are covered in ice. Earth's
+                                        outer layer is divided into several rigid tectonic plates that migrate across the surface over
+                                        many millions of years. Earth's interior emains active with a solid iron inner core, a liquid
+                                        outer core that generates Earth's magnetic field, and a convecting mantle that drives plate tectonics. (...)
+                                    </p>
+                                    <a class="col-12 d-flex justify-content-center" id="wikiLink" href="https://https://en.wikipedia.org/wiki/Earth" target="_blank">en.wikipedia.org/wiki/Earth</a>
+                                    <br>
+                                </div>
+                            </div>
+
+                            <div id="weather" class="tab-pane fade">
+                                <h3 class="row mt-5 justify-content-center border-bottom border-dark" style="height: 20%;" dir="ltr" id="country_weather">Earth</h3>
+                                <div class="border-bottom border-dark" dir="ltr">
+                                    <div class="row align-items-center">
+                                        <h3 class="col ml-2 d-flex justify-content-start" style="text-decoration-line: underline">Today</h3>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Weather:</h4>
+                                        <span class="col d-flex justify-content-start">
+                                            <img id="day_1_icon" src="libs/css/cloud-sun-rain-solid" />
+                                        </span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0"></h4>
+                                        <h5 class="col d-flex justify-content-start" id="day_1_description">Varied</h5>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Temp:</h4>
+                                        <span class="col d-flex justify-content-start"><span id="day_1_temp_fahrenheit" style="display: none;"></span><span id="day_1_temp_celsius" style="display: none;"></span><span id="day_1_temp" style="display: block;">Varied</span>&nbsp;<button id="tempUnits1" style="display: none;" onclick="degreeToggle()"><sup>o</sup><span id="degree1">C</span></button></span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Humidity:</h4>
+                                        <span class="col d-flex justify-content-start" dir="ltr" id="day_1_humidity">Varied</span>
+
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Wind:</h4>
+                                        <span class="col d-flex justify-content-start mb-2"><span id="day_1_speed_ms" style="display: none;"></span><span id="day_1_speed_mph" style="display: none;"></span><span id="day_1_speed">Varied</span>&nbsp;<button id="windUnits1" style="display: none;" onclick="degreeToggle()"><span id="speed1">m/s</span></button></span>
+                                    </div>
+                                </div>
+                                <div class="border-bottom border-dark" dir="ltr">
+                                    <div class="row align-items-center">
+                                        <h3 class="col d-flex ml-2 justify-content-start" style="text-decoration-line: underline">Tomorrow</h3>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Weather:</h4>
+                                        <span class="col d-flex justify-content-start">
+                                            <img id="day_2_icon" src="libs/css/cloud-sun-rain-solid" />
+                                        </span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0"></h4>
+                                        <h5 class="col d-flex justify-content-start" id="day_2_description">Varied</h5>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Temp:</h4>
+                                        <span class="col d-flex justify-content-start"><span id="day_2_temp_fahrenheit" style="display: none;"></span><span id="day_2_temp_celsius" style="display: none;"></span><span id="day_2_temp" style="display: block;">Varied</span>&nbsp;<button id="tempUnits2" style="display: none;" onclick="degreeToggle()"><sup>o</sup><span id="degree2">C</span></button></span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Humidity:</h4>
+                                        <span class="col d-flex justify-content-start" dir="ltr" id="day_2_humidity">Varied</span>
+                                    </div>
+                                    <div class="row align-items-center" dir="ltr">
+                                        <h4 class="col d-flex justify-content-end m-0">Wind:</h4>
+                                        <span class="col d-flex justify-content-start mb-2"><span id="day_2_speed_ms" style="display: none;"></span><span id="day_2_speed_mph" style="display: none;"></span><span id="day_2_speed">Varied</span>&nbsp;<button id="windUnits2" style="display: none;" onclick="degreeToggle()"><span id="speed2">m/s</span></button></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="exchange" class="tab-pane fade" dir="ltr">
+                                <div class="row justify-content-center">
+                                    <select class="w-75 mt-5 m-3 currencyDropdown" id="currency_from" dir="ltr">
+                                    </select>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <input id="input_from" class="w-50 d-flex m-3" dir="ltr" type="number" placeholder="1.00" />
+                                </div>
+                                <div class="row align-items-center">
+                                    <span class="col justify-content-center d-flex fas fa-arrows-alt-v m-3" id="arrow"></span>
+                                </div>
+                                    <div class="row justify-content-center">
+                                        <select class="w-75 d-flex m-3 currencyDropdown" id="currency_to" dir="ltr">
+                                        </select>
+                                    </div>
+                            <div class="row justify-content-center">
+                                <input id="input_to" class="w-50 d-flex m-3" dir="ltr" type="number" placeholder="1.00" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="spaceMap" class="col-sm-12 col-md-8 col-lg-8 m-0" style="height: 100vh; max-height: none; width: 100%"></div>
+    </div>
+        </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <script src="node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="node_modules/leaflet-easybutton/src/easy-button.js"></script>
+    <script src="libs/js/main.js"></script>
+    <script type="application/javascript" src="libs/js/jquery-2.2.3.min.js"></script>
+
+</body>
+</html>
